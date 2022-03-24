@@ -93,10 +93,12 @@ print "Server: " + server
 print "Node: " + node
 
 apps = AdminApp.list()
-print "Already installed applications: " + ', '.join(apps)
-
-for index in range(len(apps)):
-    if apps[index].find(application) >= 0:
+print "Already installed applications: " + apps
+appsAR =[]
+if apps:
+    appsAR = apps.split()
+for index in range(len(appsAR)):
+    if appsAR[index].find(application) >= 0:
         print 'Uninstalling application: ' + application
         AdminApp.uninstall(application)
         AdminConfig.save()
@@ -107,6 +109,7 @@ parms = "-appname " + application
 parms += " -node " + node + " -server " + server
 parms += " -nouseMetaDataFromBinary"
 app = AdminApp.install(archpath, [parms])
+AdminConfig.save()
 
 appManager = AdminControl.queryNames('node='+node+',type=ApplicationManager,process='+server+',*')
 AdminControl.invoke(appManager, 'startApplication', application)
