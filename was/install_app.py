@@ -95,8 +95,13 @@ print "Node: " + node
 apps = AdminApp.list()
 print "Already installed applications: " + apps
 appsAR =[]
-if apps:
+if isinstance(apps, list):
+    print "Apps is a list of length: " + str(len(apps))
+    appsAR = apps
+else:
+    print "Apps is a string!"
     appsAR = apps.split()
+    print "Apps is now a list of lenght: " + str(len(appsAR))
 for index in range(len(appsAR)):
     if appsAR[index].find(application) >= 0:
         print 'Uninstalling application: ' + application
