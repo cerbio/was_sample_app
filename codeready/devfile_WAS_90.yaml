@@ -54,11 +54,11 @@ components:
         containerPath: /etc/websphere    
     endpoints:
       - name: apps
-        port: 9443
+        port: 9080
         attributes:
           discoverable: 'true'
           public: 'true'
-          protocol: 'https'
+          protocol: 'http'
       - name: was
         port: 9043
         attributes:

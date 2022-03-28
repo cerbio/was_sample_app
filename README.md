@@ -59,3 +59,7 @@ Execute the following steps:
 6. Update the code and _Build_ to generate a new WAR file.
 7. Run the command _Update (App-fast deploy)_ to update the server with latest code.
 
+__Note__ that in order to access the WebSphere console URL it is required to create a route based on the 'was' service specifying 'passthrough' as secure configuration option.
+
+Application URL:
+<ROUTE_CONSOLE_OCP>/ibm/console/logon.jsp
