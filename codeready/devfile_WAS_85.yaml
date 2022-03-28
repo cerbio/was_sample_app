@@ -65,7 +65,7 @@ components:
     command: ['sleep']
     args: ['infinity']
 commands:
-- name: Build & Publish
+- name: Build
   actions:
   - type: exec
     component: maven
@@ -77,23 +77,29 @@ commands:
     component: wasbase
     command: scripts/restore_profile.sh ${CHE_PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${CHE_PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Deploy
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/deploy.sh " ${CHE_PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Start
+- name: Start server
   actions:
   - type: exec
     component: wasbase
     command: scripts/start.sh
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Stop
+- name: Stop server
   actions:
   - type: exec
     component: wasbase
     command:  scripts/stop.sh
+    workdir: ${CHE_PROJECTS_ROOT}/wasbase
+- name: Deploy (app & Config)
+  actions:
+  - type: exec
+    component: wasbase
+    command: scripts/deploy.sh " ${CHE_PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
+    workdir: ${CHE_PROJECTS_ROOT}/wasbase
+- name: Update (App-fast deploy)
+  actions:
+  - type: exec
+    component: wasbase
+    command: scripts/update.sh "Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
 - name: Debug (Attach)
   actions:

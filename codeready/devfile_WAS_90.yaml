@@ -2,14 +2,16 @@ apiVersion: 1.0.0
 metadata:
   name: wasbase90
 projects:
-  - name: wasbase
-    source:
-      location: "https://github.com/cerbio/codeready.git"
-      type: git
-      branch: main
+  # My development project
   - name: sampleapp
     source:
       location: "https://github.com/cerbio/was_sample_app.git"
+      type: git
+      branch: main
+  # The base project required to the WebSphere dev environemnt!
+  - name: wasbase
+    source:
+      location: "https://github.com/cerbio/codeready.git"
       type: git
       branch: main
 components:
@@ -56,6 +58,7 @@ components:
         attributes:
           discoverable: 'true'
           public: 'true'
+          protocol: 'https'
       - name: was
         port: 9043
         attributes:
@@ -65,11 +68,11 @@ components:
     command: ['sleep']
     args: ['infinity']
 commands:
-- name: Build & Publish
+- name: Build
   actions:
   - type: exec
     component: maven
-    command: 'mvn clean install'
+    command: 'mvn clean package'
     workdir: ${CHE_PROJECTS_ROOT}/sampleapp
 - name: Init default profile
   actions:
@@ -77,23 +80,29 @@ commands:
     component: wasbase
     command: scripts/restore_profile.sh ${CHE_PROJECTS_ROOT}/wasbase/scripts/profile90.bck ${CHE_PROJECTS_ROOT}/wasbase/scripts/server-cfg90.props
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Deploy
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/deploy.sh " ${CHE_PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Start
+- name: Start server
   actions:
   - type: exec
     component: wasbase
     command: scripts/start.sh
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Stop
+- name: Stop server
   actions:
   - type: exec
     component: wasbase
     command:  scripts/stop.sh
+    workdir: ${CHE_PROJECTS_ROOT}/wasbase
+- name: Deploy (App & Config)
+  actions:
+  - type: exec
+    component: wasbase
+    command: scripts/deploy.sh " ${CHE_PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
+    workdir: ${CHE_PROJECTS_ROOT}/wasbase
+- name: Update (App-fast deploy)
+  actions:
+  - type: exec
+    component: wasbase
+    command: scripts/update.sh "Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
 - name: Debug (Attach)
   actions:
