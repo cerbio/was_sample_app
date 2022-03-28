@@ -30,7 +30,7 @@ public class SimpleServlet extends HttpServlet {
             return messages[new Random().nextInt(messages.length)];
         }
         catch(Exception exc){
-            return "In someway the code failed!! :-(";
+            return "Someway the code failed!! :-(";
         }
     }
 
