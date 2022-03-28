@@ -100,11 +100,12 @@ if apps:
     print "Apps is now a list of lenght: " + str(len(appsAR))
 
 for index in range(len(appsAR)):
-    if appsAR[index].find(application) >= 0:
+    if appsAR[index].lower() == application.lower():
         print 'Uninstalling application: ' + application
         AdminApp.uninstall(application)
         AdminConfig.save()
         print 'Uninstalled app!'
+        break;
 print 'Done!'
 
 parms = "-appname " + application

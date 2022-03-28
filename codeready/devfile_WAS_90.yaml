@@ -68,18 +68,18 @@ components:
     command: ['sleep']
     args: ['infinity']
 commands:
-- name: Build
-  actions:
-  - type: exec
-    component: maven
-    command: 'mvn clean package'
-    workdir: ${CHE_PROJECTS_ROOT}/sampleapp
 - name: Init default profile
   actions:
   - type: exec
     component: wasbase
     command: scripts/restore_profile.sh ${CHE_PROJECTS_ROOT}/wasbase/scripts/profile90.bck ${CHE_PROJECTS_ROOT}/wasbase/scripts/server-cfg90.props
     workdir: ${CHE_PROJECTS_ROOT}/wasbase
+- name: Build
+  actions:
+  - type: exec
+    component: maven
+    command: 'mvn clean package'
+    workdir: ${CHE_PROJECTS_ROOT}/sampleapp
 - name: Start server
   actions:
   - type: exec
