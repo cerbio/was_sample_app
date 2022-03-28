@@ -17,7 +17,7 @@ This command is left untouched by the original  [wasbase](https://github.com/cer
 
 ### _Build_
 
-The _Build_ command (maven component) runs 'mvn clean package' fron the root of the sampleapp git repo to build the java classes and package them as a WAR file.
+The _Build_ command (maven component) runs ``` mvn clean package ``` from the root of the sampleapp git repo to build the java classes and package them as a WAR file.
 
 ### _Start server_
 
@@ -29,9 +29,9 @@ This command is left untouched by the original  [wasbase](https://github.com/cer
 
 ### _Deploy (App & Config)_
 
-This command deploys the WAR file created by the build and cofnigures some specific [properties](./was/was-config.props) for the application.
+This command deploys the WAR file created by the build and configures some specific [properties](./was/was-config.props) for the application.
 
-The deployment is executed by the application specific [python script](./was/install_app.py).
+The deployment is executed by the [python script](./was/install_app.py) specific to this application.
 
 The deployment assigns an application name in Websphere equal to 'Todos'.
 
