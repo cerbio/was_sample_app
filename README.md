@@ -40,3 +40,12 @@ The deployment assigns an application name in Websphere equal to 'Todos'.
 This command executes a replacement of the WAR file: it is faster than an actual deployment.
 
 This command is used when there are new code changes in order to propagate them to the Websphere server and thus make them vivisble to the debugger.
+
+## The devfile for Websphere Traditional 85: [devfile_WAS_85.yaml](./CodeReady/devfile_WAS_85.yaml)
+
+This is similar to the Websphere Traditional 9 devfile: the only difference is in some default values required by the underlying [wasbase](https://github.com/cerbio/codeready.git) to handle Websphere 85.
+
+## __How to run it__
+
+Get the devfile more appropriated for
+
