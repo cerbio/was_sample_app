@@ -1,6 +1,6 @@
 # Sample app for Websphere server from [IBM javaHelloWorld app](https://github.com/IBM-Cloud/java-helloworld)
 
-This project is a sample use of Websphere Traditional in RedHat CodeReady Workspace.
+This project is a sample of how to develop using Websphere Traditional in RedHat CodeReady Workspace.
 
 ## Definition of the workspace for Websphere 9: [devfile_WAS_90.yaml](./CodeReady/devfile_WAS_90.yaml)
 
