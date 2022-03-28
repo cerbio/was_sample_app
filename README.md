@@ -2,7 +2,7 @@
 
 This project is a sample of how to develop using Websphere Traditional in RedHat CodeReady Workspace.
 
-## Definition of the workspace for Websphere 9: [devfile_WAS_90.yaml](./CodeReady/devfile_WAS_90.yaml)
+## The devfile for Websphere Traditional 9: [devfile_WAS_90.yaml](./CodeReady/devfile_WAS_90.yaml)
 
 The devfile includes two projects:
 
