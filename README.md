@@ -47,5 +47,15 @@ This is similar to the Websphere Traditional 9 devfile: the only difference is i
 
 ## __How to run it__
 
-Get the devfile more appropriated for
+Get the devfile more appropriated for your development environment and creates a RH CoderReady Workspace from it.
+
+Execute the following steps:
+
+1. Run the command _Init default profile_ to initialize the Websphere server.
+2. Run the _Build_ to start the build of the application WAR.
+3. Run the command _Start server_ to start it.
+4. Run the command _Deploy (App & Config)_ once the build is complete.
+5. Run the _Debug (attach)_ command to initialize a debugging session
+6. Update the code and _Build_ to generate a new WAR file.
+7. Run the command _Update (App-fast deploy)_ to update the server with latest code.
 
