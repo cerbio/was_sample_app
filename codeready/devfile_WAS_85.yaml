@@ -1,120 +1,145 @@
-apiVersion: 1.0.0
+schemaVersion: 2.2.0
 metadata:
-  name: wasbase85
+  name: sampleapp85
 projects:
+  # My development project
+  - name: sampleapp85
+    git:
+      checkoutFrom:
+        remote: origin
+        revision: 'main'
+      remotes:
+        origin: 'https://github.com/cerbio/was_sample_app.git'
   - name: wasbase
-    source:
-      location: "https://github.com/cerbio/codeready.git"
-      type: git
-      branch: main
-  - name: sampleapp
-    source:
-      location: "https://github.com/cerbio/was_sample_app.git"
-      type: git
-      branch: main
+    git:
+      checkoutFrom:
+        remote: wasbase
+        revision: 'main'
+      remotes:
+      # The base project required to the WebSphere dev environemnt!
+        wasbase: 'https://github.com/cerbio/codeready'
 components:
-  - id: redhat/java8/latest
-    type: chePlugin
-  - alias: maven
-    type: dockerimage
-    mountSources: true
-    endpoints:
+  - name: m2
+    volume:
+      size: 2Gi
+  - name: wasconfig
+    volume:
+      size: 1Gi
+  - name: installedapps
+    volume:
+      size: 1Gi
+  - name: profilenable 
+    volume:
+      size: 1Gi
+  - name: wasprofile 
+    volume:
+      size: 4Gi
+  - name: wasetc 
+    volume:
+      size: 1Gi
+  - name: maven
+    container:
+      # image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15'
+      image: 'quay.io/devfile/universal-developer-image:ubi8-latest'
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
+        - name: wasconfig
+          path: /work/config
+      # This volume contains application specific configuration files
+        - name: installedapps
+          path: /prod/installedApps
+      endpoints:
       - name: 8080-tcp
-        port: 8080
-    memoryLimit: 768Mi
-    volumes:
-      - name: m2
-        containerPath: /home/jboss/.m2
-      - name: wasconfig
-        containerPath: /work/config    
-    image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15'
-    env:
-      - value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss'
+        targetPort: 8080
+      memoryRequest: 256M
+      memoryLimit: 1Gi
+      cpuRequest: 300m
+      cpuLimit: 2000m
+      env:
+      - value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms512m  -Xmx2048m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss'
         name: JAVA_OPTS
       - value: $(JAVA_OPTS)
         name: MAVEN_OPTS
-  - alias: wasbase
-    type: dockerimage
-    image: 'ibmcom/websphere-traditional:8.5.5.17-ubi'
-    memoryLimit: 1Gi
-    mountSources: true
-    volumes:
+
+  - name: wasbase
+    container:
+      image: 'ibmcom/websphere-traditional:9.0.5.12-ubi'
+      memoryRequest: 512M
+      memoryLimit: 3Gi
+      cpuRequest: 500m
+      cpuLimit: 2000m
+
+      volumeMounts:
       # This volume is required to enable profiles command (manageprofile.sh) to not fail!
       - name: profilenable
-        containerPath: /workspace   
+        path: /workspace
       # This volume will contains the artifacts produced by the build and to be deployed in the server.
       - name: wasconfig
-        containerPath: /work/config
+        path: /work/config
       # Thsi volume overwrites the defautl server to make it persistent!
       - name: wasprofile
-        containerPath: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+        path: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
       - name: wasetc
-        containerPath: /etc/websphere    
-    endpoints:
+        path: /etc/websphere
+      # This volume contains application specific configuration files
+      - name: installedapps
+        path: /prod/installedApps
+      endpoints:
       - name: apps
-        port: 9080
+        targetPort: 9080
         attributes:
           discoverable: 'true'
           public: 'true'
           protocol: 'http'
+          path: /presenzeAssenzeEntrate/login.jsp
       - name: was
-        port: 9043
+        targetPort: 9043
         attributes:
           discoverable: 'true'
           public: 'true'
           protocol: 'https'
-    command: ['sleep']
-    args: ['infinity']
+      command: ['sleep']
+      args: ['infinity']
+       
 commands:
-- name: Build
-  actions:
-  - type: exec
-    component: maven
-    command: 'mvn clean install'
-    workdir: ${CHE_PROJECTS_ROOT}/sampleapp
-- name: Init default profile
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/restore_profile.sh ${CHE_PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${CHE_PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Start server
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/start.sh
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Stop server
-  actions:
-  - type: exec
-    component: wasbase
-    command:  scripts/stop.sh
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Deploy (app & Config)
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/deploy.sh " ${CHE_PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Update (App-fast deploy)
-  actions:
-  - type: exec
-    component: wasbase
-    command: scripts/update.sh "Todos ${CHE_PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
-    workdir: ${CHE_PROJECTS_ROOT}/wasbase
-- name: Debug (Attach)
-  actions:
-    - referenceContent: |
-        {
-        "version": "0.2.0",
-        "configurations": [
-        {
-            "type": "java",
-            "request": "attach",
-            "name": "Debug (Attach)",
-            "hostName": "localhost",
-            "port": 7777
-        }
-        ]
-        }
-      type: vscode-launch
+  - id: initdefaultprofile
+    exec:
+      component: wasbase
+      commandLine: scripts/restore_profile.sh ${PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: startserver
+    exec:
+      component: wasbase
+      commandLine: scripts/start.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: stopserver
+    exec:
+      component: wasbase
+      commandLine:  scripts/stop.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: tailsystemout
+    exec:
+      component: wasbase
+      commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemOut.log
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: tailsystemerr
+    exec:
+      component: wasbase
+      commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemErr.log
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: showconsolecredentials
+    exec:
+      component: wasbase
+      commandLine:   bash show_credentials.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase/scripts
+  - id: build
+    exec:
+      commandLine: 'mvn clean package'
+      component: maven
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: deploy
+    exec:
+      commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
