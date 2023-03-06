@@ -92,7 +92,7 @@ components:
           discoverable: 'true'
           public: 'true'
           protocol: 'http'
-          path: /presenzeAssenzeEntrate/login.jsp
+          path: /
       - name: was
         targetPort: 9043
         attributes:
