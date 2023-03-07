@@ -142,10 +142,10 @@ commands:
     exec:
       component: maven
       commandLine: mkdir -p /home/user/.m2 & wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml
-  - id: cfg
+  - id: cfg-init
     composite:
       commands:
         - cfgmaven
 events:
-  preStart:
-    - cfg
+  postStart:
+    - cfg-init
