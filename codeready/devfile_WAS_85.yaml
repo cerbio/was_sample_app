@@ -139,9 +139,13 @@ commands:
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: cfgmaven
-    apply:
+    exec:
       component: maven
       commandLine: mkdir -p /home/user/.m2 & wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml
+  - id: cfg
+    composite:
+      commands:
+        - cfgmaven
 events:
   preStart:
-    - cfgmaven
+    - cfg
