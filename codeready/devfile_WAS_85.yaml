@@ -39,8 +39,9 @@ components:
       size: 1Gi
   - name: maven
     container:
-      # image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15'
-      image: 'quay.io/devfile/universal-developer-image:ubi8-latest'
+      # image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15' codeReady
+      # image: 'quay.io/devfile/universal-developer-image:ubi8-latest' DevSpaces
+      image: 'alm-repos.sogei.it/devfile/universal-developer-image:ubi8-4407fa4_v1'
       volumeMounts:
         - name: m2
           path: /home/jboss/.m2
@@ -143,3 +144,11 @@ commands:
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: cfgmaven
+    exec:
+      component: maven
+      commandLine: |
+         MVN_SETTINGS_REMOTE="https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml"
+         mkdir -p /home/user/.m2
+         wget  -q --no-check-certificate $MVN_SETTINGS_REMOTE -O /home/user/.m2/settings.xml
+   
