@@ -43,7 +43,7 @@ components:
       image: 'quay.io/devfile/universal-developer-image:ubi8-latest'
       volumeMounts:
         - name: m2
-          path: /home/jboss/.m2
+          path: /home/user/.m2
         - name: wasconfig
           path: /work/config
       # This volume contains application specific configuration files
@@ -56,11 +56,6 @@ components:
       memoryLimit: 1Gi
       cpuRequest: 300m
       cpuLimit: 2000m
-      env:
-      - value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms512m  -Xmx2048m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss'
-        name: JAVA_OPTS
-      - value: $(JAVA_OPTS)
-        name: MAVEN_OPTS
 
   - name: wasbase
     container:

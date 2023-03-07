@@ -60,7 +60,7 @@ components:
 
   - name: wasbase
     container:
-      image: 'ibmcom/websphere-traditional:9.0.5.12-ubi'
+      image: 'ibmcom/websphere-traditional:8.5.5.22-ubi'
       memoryRequest: 512M
       memoryLimit: 3Gi
       cpuRequest: 500m
@@ -74,8 +74,8 @@ components:
       - name: wasconfig
         path: /work/config
       # Thsi volume overwrites the defautl server to make it persistent!
-      # - name: wasprofile
-      #   path: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+      - name: wasprofile
+        path: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
       - name: wasetc
         path: /etc/websphere
       # This volume contains application specific configuration files
