@@ -147,8 +147,5 @@ commands:
   - id: cfgmaven
     exec:
       component: maven
-      commandLine: |
-         MVN_SETTINGS_REMOTE="https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml"
-         mkdir -p /home/user/.m2
-         wget  -q --no-check-certificate $MVN_SETTINGS_REMOTE -O /home/user/.m2/settings.xml
+      commandLine: mkdir -p /home/user/.m2 & wget  -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml
    
