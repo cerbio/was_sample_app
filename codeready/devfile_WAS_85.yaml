@@ -139,7 +139,7 @@ commands:
       label: 7. Execute the build
       commandLine: 'mvn clean package'
       component: maven
-      workingDir: ${PROJECTS_ROOT}/wasbase
+      workingDir: ${PROJECTS_ROOT}/sampleapp
   - id: deploy
     exec:
       label: 8. Deploy the app WAR
