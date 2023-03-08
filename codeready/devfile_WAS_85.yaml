@@ -146,15 +146,10 @@ commands:
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
-  - id: sourcesdk
-    exec:
-      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh"
-      component: maven
-      workingDir: ${PROJECTS_ROOT}
   - id: sdkjdk8
     exec:
       label: 9. Configure java 8
-      commandLine: sdk use java 8.0.332-tem
+      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh" && sdk use java 8.0.332-tem
       component: maven
       workingDir: ${PROJECTS_ROOT}
   - id: cfgmaven
@@ -165,6 +160,4 @@ commands:
 
 events:
   postStart:
-      - sourcesdk
-      - sdkjdk8
       - cfgmaven
