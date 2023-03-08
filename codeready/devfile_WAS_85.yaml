@@ -149,9 +149,9 @@ commands:
   - id: setjava8
     exec:
       label: 9. Configure java 8
-      commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
-      component: wasbase
-      workingDir: ${PROJECTS_ROOT}/wasbase
+      commandLine: sdk use java 8.0.332-tem
+      component: maven
+      workingDir: ${PROJECTS_ROOT}
   - id: cfgmaven
     exec:
       label: Configure MAVEN 
