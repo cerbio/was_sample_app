@@ -146,12 +146,18 @@ commands:
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: setjava8
+    exec:
+      label: Configure java 8
+      commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
   - id: cfgmaven
     exec:
       label: Configure MAVEN 
       component: maven
       commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
-      
+
 
 events:
   postStart:
