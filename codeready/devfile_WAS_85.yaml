@@ -162,13 +162,9 @@ commands:
       label: Configure MAVEN 
       component: maven
       commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
-  - id: initenv 
-    composite:
-      commands:
+
+events:
+  postStart:
       - sourcesdk
       - sdkjdk8
       - cfgmaven
-      parallel: false
-events:
-  postStart:
-    - initenv
