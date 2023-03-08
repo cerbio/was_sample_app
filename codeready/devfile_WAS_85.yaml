@@ -149,7 +149,7 @@ commands:
   - id: sdkjdk8
     exec:
       label: 9. Configure java 8
-      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh" && sdk use java 8.0.332-tem
+      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh" && sdk default java 8.0.332-tem
       component: maven
       workingDir: ${PROJECTS_ROOT}
   - id: cfgmaven
