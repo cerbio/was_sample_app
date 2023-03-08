@@ -150,7 +150,8 @@ commands:
     exec:
       label: Configure MAVEN 
       component: maven
-      commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml & sdk use java 8.0.332-tem
+      commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
+      
 
 events:
   postStart:
