@@ -157,4 +157,4 @@ commands:
         - cfgmaven
 events:
   postStart:
-    - cfg-init
+    - cfgmaven
