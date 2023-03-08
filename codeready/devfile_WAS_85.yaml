@@ -146,10 +146,15 @@ commands:
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
-  - id: setjava8
+  - id: sourcesdk
+    exec:
+      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh"
+      component: maven
+      workingDir: ${PROJECTS_ROOT}
+  - id: sdkjdk8
     exec:
       label: 9. Configure java 8
-      commandLine: source "$HOME/.sdkman/bin/sdkman-init.sh" & sdk use java 8.0.332-tem
+      commandLine: sdk use java 8.0.332-tem
       component: maven
       workingDir: ${PROJECTS_ROOT}
   - id: cfgmaven
@@ -157,8 +162,13 @@ commands:
       label: Configure MAVEN 
       component: maven
       commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
-
-
+  - id: initenv 
+    composite:
+      commands:
+      - sourcesdk
+      - sdkjdk8
+      - cfgmaven
+      parallel: false
 events:
   postStart:
-    - cfgmaven
+    - initenv
