@@ -41,7 +41,7 @@ components:
     container:
       # image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15' codeReady
       # image: 'quay.io/devfile/universal-developer-image:ubi8-latest' DevSpaces
-      image: 'alm-repos.sogei.it/devfile/universal-developer-image:ubi8-4407fa4_v1'
+      image: 'alm-repos.sogei.it/devfile/universal-developer-image:ubi8-4407fa4_v2'
       volumeMounts:
         - name: m2
           path: /home/user/.m2
@@ -100,48 +100,57 @@ components:
 commands:
   - id: initdefaultprofile
     exec:
+      label: 1. Init Default Profile server
       component: wasbase
       commandLine: scripts/restore_profile.sh ${PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: startserver
     exec:
+      label: 2. Start Server
       component: wasbase
       commandLine: scripts/start.sh
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: stopserver
     exec:
+      label: 3. Stop Server
       component: wasbase
       commandLine:  scripts/stop.sh
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: tailsystemout
     exec:
+      label: 4. Tail on systemout
       component: wasbase
       commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemOut.log
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: tailsystemerr
     exec:
+      label: 5. Tail on systemerr
       component: wasbase
       commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemErr.log
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: showconsolecredentials
     exec:
+      label: Show the WAS console password
       component: wasbase
       commandLine:   bash show_credentials.sh
       workingDir: ${PROJECTS_ROOT}/wasbase/scripts
   - id: build
     exec:
+      label: Execute the build
       commandLine: 'mvn clean package'
       component: maven
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: deploy
     exec:
+      label: Deploy the app WAR
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: cfgmaven
     exec:
+      label: Configure MAVEN 
       component: maven
-      commandLine: mkdir -p /home/user/.m2 & wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml
+      commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml
   - id: cfg-init
     composite:
       commands:
