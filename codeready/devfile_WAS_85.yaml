@@ -130,25 +130,25 @@ commands:
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: showconsolecredentials
     exec:
-      label: Show the WAS console password
+      label: 6. Show the WAS console password
       component: wasbase
       commandLine:   bash show_credentials.sh
       workingDir: ${PROJECTS_ROOT}/wasbase/scripts
   - id: build
     exec:
-      label: Execute the build
+      label: 7. Execute the build
       commandLine: 'mvn clean package'
       component: maven
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: deploy
     exec:
-      label: Deploy the app WAR
+      label: 8. Deploy the app WAR
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
   - id: setjava8
     exec:
-      label: Configure java 8
+      label: 9. Configure java 8
       commandLine: scripts/deploy.sh " ${PROJECTS_ROOT}/sampleapp/was/install_app.py Todos ${PROJECTS_ROOT}/sampleapp/target/TodosApps.war"
       component: wasbase
       workingDir: ${PROJECTS_ROOT}/wasbase
