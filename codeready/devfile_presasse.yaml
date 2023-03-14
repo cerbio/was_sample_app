@@ -203,7 +203,7 @@ commands:
   - id: setup-environment
     exec:
       label: 0.1 - Initial Environment Setup
-      component: tools
+      component: maven
       workingDir: ${PROJECTS_ROOT}
       commandLine: |
         # set java version
