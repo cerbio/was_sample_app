@@ -1,0 +1,294 @@
+schemaVersion: 2.2.0
+metadata:
+  name: PresenzeAssenzeEntrate
+projects:
+  # My development project
+  - name: presasse
+    git:
+      checkoutFrom:
+        remote: origin
+        revision: 'codeready-dev'
+      remotes:
+      # The base project required to the WebSphere dev environemnt!
+        wasbase: 'http://alm.sogei.it/tfs/SIFEntrate1Collection/TP-ENT-SA-0147/_git/PresenzeAssenzeEntrate'
+  # The base project required to the WebSphere dev environemnt!
+  - name: wasbase
+    git:
+      checkoutFrom:
+        remote: wasbase
+        revision: 'main'
+      remotes:
+      # The base project required to the WebSphere dev environemnt!
+        wasbase: 'https://github.com/cerbio/codeready'
+components:
+  - name: m2
+    volume:
+      size: 2Gi
+  - name: wasconfig
+    volume:
+      size: 1Gi
+  - name: installedapps
+    volume:
+      size: 1Gi
+  - name: profilenable 
+    volume:
+      size: 1Gi
+  - name: wasprofile 
+    volume:
+      size: 4Gi
+  - name: wasetc 
+    volume:
+      size: 1Gi
+  - name: maven
+    container:
+      # image: 'registry.redhat.io/codeready-workspaces/plugin-java8-rhel8:2.15' codeReady
+      # image: 'quay.io/devfile/universal-developer-image:ubi8-latest' DevSpaces
+      image: 'alm-repos.sogei.it/devfile/universal-developer-image:ubi8-4407fa4_v2'
+      env:
+      # Nome della cartella in cui copiare le configurazioni del WAS
+      # esempio: se la cartella si trova in /prod/installedApps/PresenzeAssenzeEntrate,
+      # il valore della variabile dovrà essere "PresenzeAssenzeEntrate"
+      - value: "PresenzeAssenzeEntrate"
+        name: APP_CONFIG_DIR_NAME
+      # path della directory in cui sono salvati i file di configurazione del WAS
+      - name: APP_CONFIG_SRC_DIR_PATH
+        value: "/projects/presasse/Documentazione/prod/installedApps/PresenzeAssenzeEntrate"
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+        - name: wasconfig
+          path: /work/config
+      # This volume contains application specific configuration files
+        - name: installedapps
+          path: /prod/installedApps
+      endpoints:
+      - name: 8080-tcp
+        targetPort: 8080
+      memoryRequest: 256M
+      memoryLimit: 2Gi
+      cpuRequest: 300m
+      cpuLimit: 2000m
+
+  - name: wasbase
+    container:
+      image: 'ibmcom/websphere-traditional:9.0.5.14-ubi'
+      env:
+      # Nome della cartella in cui copiare le configurazioni del WAS
+      # esempio: se la cartella si trova in /prod/installedApps/PresenzeAssenzeEntrate,
+      # il valore della variabile dovrà essere "PresenzeAssenzeEntrate"
+      - name: APP_CONFIG_DIR_NAME
+        value: "PresenzeAssenzeEntrate"
+      # Property opzionale per definire la password della console ad un valore predefinito.
+      # In questo modo si evita che venga definita in maniera random ad ogni riavvio del workspace.
+      - name: CUSTOM_CONSOLE_PSW
+        value: "wsadmin"
+      memoryRequest: 512M
+      memoryLimit: 3Gi
+      cpuRequest: 500m
+      cpuLimit: 2000m
+
+      volumeMounts:
+      # This volume is required to enable profiles command (manageprofile.sh) to not fail!
+      - name: profilenable
+        path: /workspace
+      # This volume will contains the artifacts produced by the build and to be deployed in the server.
+      - name: wasconfig
+        path: /work/config
+      # Thsi volume overwrites the defautl server to make it persistent!
+      - name: wasprofile
+        path: /opt/IBM/WebSphere/AppServer/profiles/AppSrv01
+      - name: wasetc
+        path: /etc/websphere
+      # This volume contains application specific configuration files
+      - name: installedapps
+        path: /prod/installedApps
+      endpoints:
+      - name: apps
+        targetPort: 9080
+        attributes:
+          discoverable: 'true'
+          public: 'true'
+          protocol: 'http'
+      - name: was
+        targetPort: 9043
+        attributes:
+          discoverable: 'true'
+          public: 'true'
+          protocol: 'https'
+      command: ['sleep']
+      args: ['infinity']
+
+
+
+
+
+  # - type: openshift
+  #   alias: service-myapp
+  #   referenceContent: |
+  #     apiVersion: v1
+  #     kind: Service
+  #     metadata:
+  #       name: myapp
+  #       labels:
+  #         app: my-app
+  #     spec:
+  #       ports:
+  #       - name: 9080-tcp
+  #         port: 80
+  #         targetPort: 9080
+
+  # - type: openshift
+  #   alias: route-myapp
+  #   referenceContent: |
+  #     apiVersion: route.openshift.io/v1
+  #     kind: Route
+  #     metadata:
+  #       annotations:
+  #         openshift.io/host.generated: "true"
+  #         haproxy.router.openshift.io/timeout: 10m
+  #       labels:
+  #         app: my-app
+  #       name: debug
+  #     spec:
+  #       host: debug-presasse-codeready.apps.sandbox-sogei.azure.cloud.areaextra.it
+  #       port:
+  #         targetPort: "9080-tcp"
+  #       tls:
+  #         insecureEdgeTerminationPolicy: Redirect
+  #         termination: edge
+  #       to:
+  #         kind: Service
+  #         name: myapp
+  #         weight: 100
+  #       wildcardPolicy: None
+
+commands:
+  - id: initdefaultprofile
+    exec:
+      label: 1. Init Default Profile server
+      component: wasbase
+      commandLine: scripts/restore_profile.sh ${PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: startserver
+    exec:
+      label: 2. Start Server
+      component: wasbase
+      commandLine: scripts/start.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: stopserver
+    exec:
+      label: 3. Stop Server
+      component: wasbase
+      commandLine:  scripts/stop.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: tailsystemout
+    exec:
+      label: 4. Tail on systemout
+      component: wasbase
+      commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemOut.log
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: tailsystemerr
+    exec:
+      label: 5. Tail on systemerr
+      component: wasbase
+      commandLine:  tail -n100 -f  /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/server1/SystemErr.log
+      workingDir: ${PROJECTS_ROOT}/wasbase
+  - id: showconsolecredentials
+    exec:
+      label: 6. Show the WAS console password
+      component: wasbase
+      commandLine:   bash show_credentials.sh
+      workingDir: ${PROJECTS_ROOT}/wasbase/scripts
+  - id: sdkjdk8
+    exec:
+      label: 9. Configure java 8
+      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh" && sdk default java 8.0.332-tem
+      component: maven
+      workingDir: ${PROJECTS_ROOT}
+  - id: cfgmaven
+    exec:
+      label: Configure MAVEN 
+      component: maven
+      commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
+
+  # Presenze Assenze dedicated deploy commands
+  - id: deploall
+    exec:
+      label: 6 Deploy (All)
+      commandLine:  /projects/presasse/was/deploy.sh
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
+
+  - id: deploelab
+    exec:
+      label: 6.1 Deploy elaborazioni
+      commandLine:  /projects/presasse/was/deploy.sh elaborazioni
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
+
+  - id: deplostampe
+    exec:
+      label: 6.2 Deploy stampe
+      commandLine:  /projects/presasse/was/deploy.sh stampe
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
+
+  - id: deplotimbrature
+    exec:
+      label: 6.3 Deploy timbrature
+      commandLine:  /projects/presasse/was/deploy.sh timbrature
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
+
+  - id: deployfe
+    exec:
+      label: 6.4 Deploy frontend
+      commandLine:  /projects/presasse/was/deploy.sh frontend
+      component: wasbase
+      workingDir: ${PROJECTS_ROOT}/wasbase
+
+  # Presenze Assenze dedicated build commands
+  - id: buildctx
+    exec:
+      label: 8 Init build context
+      commandLine: 'chmod +x *.sh && ./init.sh'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+
+  - id: buildall
+    exec:
+      label: 8.1  Build all
+      commandLine: './build-all.sh'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+
+  - id: buildela
+    exec:
+      label: 8.2  Build elaborazioni
+      commandLine: './build-all.sh elaborazioni'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+
+  - id: buildstampe
+    exec:
+      label: 8.3  Build stampe
+      commandLine: './build-all.sh stampe'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+  - id: buildtim
+    exec:
+      label: 8.4  Build timbrature
+      commandLine: './build-all.sh timbrature'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+  - id: buildfe
+    exec:
+      label: 8.4  Build frontend
+      commandLine: './build-all.sh frontend'
+      component: maven
+      workingDir:  '${PROJECTS_ROOT}/presasse/was'
+
+events:
+  postStart:
+      - cfgmaven
+      - sdkjdk8
