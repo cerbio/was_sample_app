@@ -167,8 +167,8 @@ commands:
     exec:
       label: 1. Init Default Profile server
       component: wasbase
-      commandLine: scripts/restore_profile.sh ${PROJECTS_ROOT}/wasbase/scripts/profile85.bck ${PROJECTS_ROOT}/wasbase/scripts/server-cfg85.props
-      workingDir: ${PROJECTS_ROOT}/wasbase
+      commandLine: scripts/restore_profile.sh ${PROJECTS_ROOT}/wasbase/scripts/profile90.bck ${PROJECTS_ROOT}/wasbase/scripts/server-cfg90.props
+      workingDir: ${PROJECTS_ROOT}/wasbase  
   - id: startserver
     exec:
       label: 2. Start Server
