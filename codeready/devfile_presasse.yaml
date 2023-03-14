@@ -3,14 +3,14 @@ metadata:
   name: PresenzeAssenzeEntrate
 projects:
   # My development project
-  - name: presasse
-    git:
-      checkoutFrom:
-        remote: origin
-        revision: 'codeready-dev'
-      remotes:
-      # The base project required to the WebSphere dev environemnt!
-        wasbase: 'http://alm.sogei.it/tfs/SIFEntrate1Collection/TP-ENT-SA-0147/_git/PresenzeAssenzeEntrate'
+  # - name: presasse
+  #   git:
+  #     checkoutFrom:
+  #       remote: origin
+  #       revision: 'codeready-dev'
+  #     remotes:
+  #     # The base project required to the WebSphere dev environemnt!
+  #       wasbase: 'http://alm.sogei.it/tfs/SIFEntrate1Collection/TP-ENT-SA-0147/_git/PresenzeAssenzeEntrate'
   # The base project required to the WebSphere dev environemnt!
   - name: wasbase
     git:
