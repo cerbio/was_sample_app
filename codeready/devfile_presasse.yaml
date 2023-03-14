@@ -199,17 +199,28 @@ commands:
       component: wasbase
       commandLine:   bash show_credentials.sh
       workingDir: ${PROJECTS_ROOT}/wasbase/scripts
-  - id: sdkjdk8
+ 
+  - id: setup-environment
     exec:
-      label: 9. Configure java 8
-      commandLine: source "/home/user/.sdkman/bin/sdkman-init.sh" && sdk default java 8.0.332-tem
-      component: maven
+      label: 0.1 - Initial Environment Setup
+      component: tools
       workingDir: ${PROJECTS_ROOT}
-  - id: cfgmaven
-    exec:
-      label: Configure MAVEN 
-      component: maven
-      commandLine: wget -q --no-check-certificate "https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml" -O /home/user/.m2/settings.xml 
+      commandLine: |
+        # set java version
+        . /home/user/.sdkman/bin/sdkman-init.sh
+        sdk install java 8.0.332-tem
+        sdk default java 8.0.332-tem
+        # configure settings.xml and .npmrc
+        setup_configurations_files(){
+          MVN_SETTINGS_REMOTE="https://alm-repos.sogei.it/repository/codeready-plugins/assets/settings-https-v1.xml"
+          mkdir -p /home/user/.m2
+          wget  -q --no-check-certificate $MVN_SETTINGS_REMOTE -O /home/user/.m2/settings.xml
+        
+          echo registry=https://alm-repos.sogei.it/repository/npm-group/ > /home/user/.npmrc
+        }
+        setup_configurations_files
+        # configure git credential.helper
+        git config --global credential.helper 'cache --timeout 36000'
 
   # Presenze Assenze dedicated deploy commands
   - id: deploall
@@ -290,4 +301,4 @@ commands:
 
 events:
   postStart:
-      - sdkjdk8
+      - setup-environment
