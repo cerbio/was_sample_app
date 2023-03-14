@@ -290,5 +290,4 @@ commands:
 
 events:
   postStart:
-      - cfgmaven
       - sdkjdk8
